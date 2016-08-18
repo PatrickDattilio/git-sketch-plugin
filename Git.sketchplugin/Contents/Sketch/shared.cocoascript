@@ -143,12 +143,34 @@ var shared = {
     }
     return branch;
   },
-  exportArtboards: function(doc) {
+  exportArtboards: function(context) {
+    var artboardIds = [[context valueForKey:@"selection"] valueForKeyPath:@"parentArtboard.@distinctUnionOfObjects.objectID"];    
+    var validArtboardIds = [NSMutableArray array];
+    var loop = [artboardIds objectEnumerator];
+    while (artboardId = [loop nextObject]) {
+        if ([artboardId isKindOfClass:[NSString class]]) {
+            [validArtboardIds addObject:artboardId];
+        }
+    }
+    
+    loop = nil;
+    
+    artboardIds = [validArtboardIds copy];
+    
+    validArtboardIds = nil;
+    
+    if (![artboardIds count]) {
+        [NSApp displayDialog:@"Please select the artboards you want to export to Zeplin.\n\n☝️ Selecting a layer inside the artboard should be enough." withTitle:@"No artboard selected"];
+        return;
+    }
+
+    var doc = context.document;
     var path = getCurrentDirectory(doc);
     var currentFileName = getCurrentFileName(doc);
     var currentFileNameWithoutExtension = currentFileName.replace(/\.sketch$/, '');
     var preferences = getUserPreferences();
-    var command = NSString.stringWithFormat_("\\cd \"%@\" && mkdir -p \"%@\" && rm -rf \"%@/%@\" && mkdir \"%@/%@\" && %@/Contents/Resources/sketchtool/bin/sketchtool export artboards \"%@\" --output=\"%@/%@\" --overwriting=YES && git add \"%@\"", path, preferences.exportFolder, preferences.exportFolder, currentFileNameWithoutExtension, preferences.exportFolder, currentFileNameWithoutExtension, [[NSBundle mainBundle] bundlePath], currentFileName, preferences.exportFolder, currentFileNameWithoutExtension, preferences.exportFolder);
+    var command = NSString.stringWithFormat_("\\cd \"%@\" && mkdir -p \"%@\" && rm -rf \"%@/%@\" && mkdir \"%@/%@\" && %@/Contents/Resources/sketchtool/bin/sketchtool export artboards \"%@\" --output=\"%@/%@\" --items=\"%@\" --overwriting=YES && git add \"%@\"", path, preferences.exportFolder, preferences.exportFolder, currentFileNameWithoutExtension, preferences.exportFolder, currentFileNameWithoutExtension, [[NSBundle mainBundle] bundlePath], currentFileName, preferences.exportFolder, currentFileNameWithoutExtension, artboardIds.join(","), preferences.exportFolder);
+    log(command);
     return exec(doc, command);
   },
   preferences: getUserPreferences,
