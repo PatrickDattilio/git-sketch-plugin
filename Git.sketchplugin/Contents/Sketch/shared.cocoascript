@@ -169,7 +169,7 @@ var shared = {
     var currentFileName = getCurrentFileName(doc);
     var currentFileNameWithoutExtension = currentFileName.replace(/\.sketch$/, '');
     var preferences = getUserPreferences();
-    var command = NSString.stringWithFormat_("\\cd \"%@\" && mkdir -p \"%@\" && rm -rf \"%@/%@\" && mkdir \"%@/%@\" && %@/Contents/Resources/sketchtool/bin/sketchtool export artboards \"%@\" --output=\"%@/%@\" --items=\"%@\" --overwriting=YES && git add \"%@\"", path, preferences.exportFolder, preferences.exportFolder, currentFileNameWithoutExtension, preferences.exportFolder, currentFileNameWithoutExtension, [[NSBundle mainBundle] bundlePath], currentFileName, preferences.exportFolder, currentFileNameWithoutExtension, artboardIds.join(","), preferences.exportFolder);
+    var command = NSString.stringWithFormat_("\\cd \"%@\" && mkdir -p \"%@\" && mkdir -p \"%@/%@\" && %@/Contents/Resources/sketchtool/bin/sketchtool export artboards \"%@\" --output=\"%@/%@\" --items=\"%@\" --overwriting=YES && git add \"%@\"", path, preferences.exportFolder, preferences.exportFolder, currentFileNameWithoutExtension, [[NSBundle mainBundle] bundlePath], currentFileName, preferences.exportFolder, currentFileNameWithoutExtension, artboardIds.join(","), preferences.exportFolder);
     log(command);
     return exec(doc, command);
   },
