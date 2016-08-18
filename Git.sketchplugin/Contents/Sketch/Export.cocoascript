@@ -5,7 +5,7 @@
 var onRun = function(context) {
   var doc = context.document;
   try {
-    var message = shared.exportArtboards(doc);
+    var message = shared.exportArtboards(context);
     doc.showMessage("Artboards exported");
   } catch(e) {
     NSApplication.sharedApplication().displayDialog_withTitle_(e, "Failed...");
